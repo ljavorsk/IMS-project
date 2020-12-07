@@ -20,7 +20,7 @@
 
 #define BETA 0.2
 #define THETA 16
-#define ALFA 0.1 // <0, 1>
+#define ALFA 1 // <0, 1>
 #define GAMA 0.083
 #define RO BETA / GAMA
 
@@ -38,7 +38,7 @@ int m[DISTRICT_NUMBER][DISTRICT_NUMBER] = {
 };
 int n[DISTRICT_NUMBER] = {669592, 564917, 584569, 674306, 691509, 645276, 826244, 801460};
 int s[DISTRICT_NUMBER];
-int I[DISTRICT_NUMBER] = {656, 676, 953, 628, 1257, 588, 1284, 716};
+int I[DISTRICT_NUMBER] = {305, 315, 444, 292, 585, 274, 598, 333};
 int r[DISTRICT_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 double getX(int district){
@@ -111,16 +111,25 @@ int main( int argc, char* argv[] )
 
 	printf("R0: %f\n\n", RO);
 
+	int addCases = 0;
 	for(int i=0; i < 30; i++){
 		int allCases = 0;
+		int allSus = 0;
+		int allCure = 0;
 		for(int j=0; j<DISTRICT_NUMBER; j++){
 			allCases += I[j];
+			allSus += s[j];
+			allCure += r[j];
 		}
-		printf("DAY %d: %d\n", i, allCases);
+		printf("DAY %d:\t|\tnakazeni: %d   \t|\tzdravi: %d\t|\tvylieceni: %d    \t|\tpribudlo: %d     \t|\tspolu: %d\n", i, allCases, allSus, allCure, addCases, allCases+allCure+allSus);
+		addCases = 0;
 		for(int j=0; j<DISTRICT_NUMBER; j++){
-			s[j] = susscpectNumber(j);
+			int newS = susscpectNumber(j);
+			addCases -= I[j];
 			r[j] += GAMA * I[j];
 			I[j] = infectionNumber(j);
+			s[j] = newS;
+			addCases += I[j];
 		}
 	}
 }
