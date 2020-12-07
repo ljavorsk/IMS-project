@@ -56,14 +56,29 @@ int I[DISTRICT_NUMBER] = {305, 315, 444, 292, 585, 274, 598, 333};
 /* Array of recovered people in each district */
 int r[DISTRICT_NUMBER] = {346, 357, 504, 332, 664, 311, 678, 379};
 
+/**
+ * Return infected ration in district.
+ * @param district specific district.
+ * @return double value of infected ration.
+ */
 double getX(int district){
 	return I[district] / n[district];
 }
 
+/**
+ * Return healthy people (not infected yet) ration in district.
+ * @param district specific district.
+ * @return double value of healthy people ration.
+ */
 double getY(int district){
 	return s[district] / n[district];
 }
 
+/**
+ * Calculate number of people, that come to this district from other.
+ * @param district specific district.
+ * @return number of people, that come here
+ */
 int sumMlj(int district){
 	int result = 0;
 	for(int i=0; i < DISTRICT_NUMBER; i++){
@@ -74,6 +89,11 @@ int sumMlj(int district){
 	return result;
 }
 
+/**
+ * Calculate number of people, that come to other districts from there.
+ * @param district specific district.
+ * @return number of people, that come to other districts
+ */
 int sumMjl(int district){
 	int result = 0;
 	for(int i=0; i < DISTRICT_NUMBER; i++){
@@ -84,6 +104,11 @@ int sumMjl(int district){
 	return result;
 }
 
+/**
+ * Helpful function for calculate sum of variables m, x and beta for all districts.
+ * @param district specific district.
+ * @return sum of variables m, x and beta for all districts
+ */
 double sumMXBETA(int district){
 	double result = 0;
 	for(int i=0; i < DISTRICT_NUMBER; i++){
@@ -94,6 +119,11 @@ double sumMXBETA(int district){
 	return result;
 }
 
+/**
+ * Helpful function for calculate number of infected people, which was in other district.
+ * @param district specific district.
+ * @return number of infected people, which was in other district
+ */
 double sumInfectOut(int district){
 	double result = 0;
 	for (int i = 0; i < DISTRICT_NUMBER; i++){
@@ -106,6 +136,11 @@ double sumInfectOut(int district){
 	return result;
 }
 
+/**
+ * Calculate number of healthy people (not infected yet) for actual day.
+ * @param district specific district.
+ * @return number of healthy people (not infected yet) for actual day.
+ */
 int suspectNumber(int district){
 	double nowS = s[district] - THETA * s[district] * I[district] * BETA / n[district];
 	nowS -= ALFA*(1-THETA)*(((s[district]-getY(district)*sumMlj(district)) * 
@@ -115,6 +150,11 @@ int suspectNumber(int district){
 	return round(nowS);
 }
 
+/**
+ * Calculate number of infected people for actual day.
+ * @param district specific district.
+ * @return number of infected people for actual day.
+ */
 int infectionNumber(int district){
 	double nowI = (I[district] + THETA * s[district] * I[district] * BETA / n[district]) - GAMMA * I[district];
 	nowI += ALFA*(1-THETA)*(((s[district]-getY(district)*sumMlj(district)) * 
@@ -133,7 +173,7 @@ int main( int argc, char* argv[] )
 	// At day 0 -> 56 cases were reported as new
 	int newCases = 56;
 
-	for(int i=0; i < 30; i++){
+	for(int i=0; i <= 60; i++){
 		int curretlyInfected = 0;
 		int currentlyHealthy = 0;
 		int curedCases = 0;
@@ -144,7 +184,25 @@ int main( int argc, char* argv[] )
 			curedCases += r[j];
 		}
 		
-		printf("DAY %d:\t|\tInfected: %d   \t|\tHealthy: %d\t|\tCured: %d        \t|\tNew Cases: %d\n", i, curretlyInfected, currentlyHealthy, curedCases, newCases);
+		
+		if(i%5 == 0){
+			printf("\n--------------------------------------------------------------------------------\n");
+			printf("DISTRICT\t|\tINFECTED\t|\tHEALTHY  \t|\tCURED\n");
+			printf("--------------------------------------------------------------------------------\n");
+			printf("Bratislava\t|\t%d       \t|\t%d    \t|\t%d\n", I[BA], s[BA], r[BA]);
+			printf("Trnava   \t|\t%d       \t|\t%d    \t|\t%d\n", I[TT], s[TT], r[TT]);
+			printf("Trencin  \t|\t%d       \t|\t%d    \t|\t%d\n", I[TN], s[TN], r[TN]);
+			printf("Nitra    \t|\t%d       \t|\t%d    \t|\t%d\n", I[NR], s[NR], r[NR]);
+			printf("Zilina   \t|\t%d       \t|\t%d    \t|\t%d\n", I[ZA], s[ZA], r[ZA]);
+			printf("Banska Bystrica\t|\t%d       \t|\t%d    \t|\t%d\n", I[BB], s[BB], r[BB]);
+			printf("Presov   \t|\t%d       \t|\t%d    \t|\t%d\n", I[PO], s[PO], r[PO]);
+			printf("Kosice   \t|\t%d       \t|\t%d    \t|\t%d\n", I[KE], s[KE], r[KE]);
+			printf("--------------------------------------------------------------------------------\n");
+		}
+		printf("DAY %d: | Infected: %d | Healthy: %d | Cured: %d | New Cases: %d\n", i, curretlyInfected, currentlyHealthy, curedCases, newCases);
+		if(i%5 == 0){
+			printf("\n");
+		}
 		newCases = 0;
 
 		for(int j=0; j<DISTRICT_NUMBER; j++){
